@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexicraft - Master English Tenses Faster</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        heading: ['"Outfit"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae0fd',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                        accent: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .roadmap-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6, #ec4899);
+            transform: translateX(-50%);
+            z-index: 0;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(139, 92, 246, 0.8); }
+        }
+
+        .active-level-glow {
+            animation: pulse-glow 2s infinite;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-100 overflow-x-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Header Navigation -->
+    <header class="sticky top-0 z-50 glass-card border-b border-slate-700/50 px-4 py-3 sm:px-8 shadow-xl">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <!-- App Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showRoadmap()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
+                    <i class="fa-solid fa-graduation-cap text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-heading font-extrabold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-slate-300">
+                        LEXICRAFT
+                    </h1>
+                    <span class="text-[10px] font-semibold tracking-wider text-brand-500 uppercase block -mt-1">Tense Mastery</span>
+                </div>
+            </div>
+
+            <!-- Stats & Status Indicator -->
+            <div class="flex items-center space-x-3 sm:space-x-6">
+                <!-- User Greeting Badge -->
+                <div id="userNameDisplayBadge" class="hidden flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold">
+                    <i class="fa-solid fa-user-astronaut text-brand-400"></i>
+                    <span id="headerUserName">Learner</span>
+                </div>
+
+                <!-- Online Status Pill -->
+                <div id="wifiStatus" class="flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span class="hidden sm:inline">Wi-Fi Connected / Online</span>
+                    <span class="sm:hidden">Online</span>
+                </div>
+
+                <!-- XP Score Badge -->
+                <div class="flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold text-sm shadow-inner">
+                    <i class="fa-solid fa-bolt text-amber-400 animate-pulse"></i>
+                    <span id="userXpDisplay">0 XP</span>
+                </div>
+
+                <!-- Reset Progress Button -->
+                <button onclick="resetProgress()" title="Reset All Progress" class="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 md:p-8">
+
+        <!-- VIEW 0: NAME INPUT / ONBOARDING CARD -->
+        <section id="nameInputView" class="py-12 max-w-md mx-auto space-y-8">
+            <div class="text-center space-y-3">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center shadow-xl shadow-brand-500/30">
+                    <i class="fa-solid fa-graduation-cap text-3xl text-white"></i>
+                </div>
+                <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">
+                    Master English tenses faster and easier than ever with this app!
+                </h2>
+                <p class="text-slate-400 text-sm">Please enter your name to personalize your learning journey and official certificate.</p>
+            </div>
+
+            <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-700/80 shadow-2xl space-y-5">
+                <label for="userNameInput" class="block font-heading font-bold text-lg text-slate-100 text-center">
+                    What is your name?
+                </label>
+                <div class="relative">
+                    <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="userNameInput" placeholder="Enter your full name..." class="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 font-medium transition" onkeypress="if(event.key==='Enter') submitUserName()">
+                </div>
+                <button onclick="submitUserName()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-accent-500 hover:from-brand-500 hover:to-accent-400 font-heading font-bold text-lg text-white shadow-lg shadow-brand-500/30 transform active:scale-95 transition flex items-center justify-center space-x-2">
+                    <span>START LEARNING</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW 1: ROADMAP VIEW -->
+        <section id="roadmapView" class="hidden space-y-8">
+            <div class="text-center space-y-3 pt-4 pb-2">
+                <p class="inline-block text-xs sm:text-sm font-semibold tracking-wide uppercase px-3 py-1 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30">
+                    Interactive Grammar Quest
+                </p>
+                <h2 class="font-heading text-2xl sm:text-4xl font-extrabold text-white leading-tight">
+                    "Master English tenses faster and easier than ever with this app!"
+                </h2>
+                <div class="p-4 max-w-2xl mx-auto rounded-2xl bg-slate-800/60 border border-slate-700/60 text-slate-300 text-sm sm:text-base font-medium shadow-md">
+                    <i class="fa-solid fa-trophy text-amber-400 mr-2"></i>
+                    Complete the challenges, level up your skills, and earn your certificate.
+                </div>
+            </div>
+
+            <!-- Roadmap Pathway Container -->
+            <div class="relative py-8 px-4 max-w-2xl mx-auto min-h-[1200px]">
+                <div class="roadmap-line"></div>
+                <div id="roadmapNodes" class="relative z-10 space-y-10">
+                    <!-- Nodes injected dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: LEVEL CONTENT VIEW -->
+        <section id="levelContentView" class="hidden">
+            <div class="flex items-center justify-between mb-6">
+                <button onclick="showRoadmap()" class="flex items-center space-x-2 text-sm font-bold text-slate-400 hover:text-white px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Roadmap</span>
+                </button>
+                <div id="levelProgressIndicator" class="text-xs sm:text-sm font-bold text-brand-400 uppercase tracking-wider px-3 py-1.5 rounded-lg bg-brand-500/10 border border-brand-500/20">
+                    Level 1 • Page 1 of 4
+                </div>
+            </div>
+
+            <div id="contentCard" class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl border border-slate-700/80 relative overflow-hidden min-h-[450px] flex flex-col justify-between">
+                <div id="pageBody" class="space-y-6">
+                    <!-- Page text content will load here -->
+                </div>
+
+                <div class="pt-8 mt-6 border-t border-slate-700/50 flex justify-end">
+                    <button id="nextBtn" onclick="nextPage()" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 font-heading font-bold text-lg text-white shadow-lg shadow-brand-500/30 transform active:scale-95 transition flex items-center justify-center space-x-3 uppercase tracking-wider">
+                        <span>NEXT</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: MCQS / FEEDBACK VIEW -->
+        <section id="mcqView" class="hidden">
+            <div class="flex items-center justify-between mb-6">
+                <button onclick="showRoadmap()" class="flex items-center space-x-2 text-sm font-bold text-slate-400 hover:text-white px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Exit Challenge</span>
+                </button>
+                <div id="mcqProgressText" class="text-xs sm:text-sm font-bold text-accent-400 uppercase tracking-wider px-3 py-1.5 rounded-lg bg-accent-500/10 border border-accent-500/20">
+                    Question 1 of 5
+                </div>
+            </div>
+
+            <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl border border-slate-700/80 max-w-2xl mx-auto">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
+                        <span id="mcqHeaderBadge" class="text-xs font-bold uppercase tracking-widest text-brand-400 px-3 py-1 rounded-md bg-brand-500/20">Practice Challenge</span>
+                        <span class="text-xs font-semibold text-slate-400"><i class="fa-solid fa-award text-amber-400 mr-1"></i>+20 XP</span>
+                    </div>
+
+                    <h3 id="mcqQuestionText" class="font-heading text-xl sm:text-2xl font-bold text-white leading-relaxed">
+                        Question loading...
+                    </h3>
+
+                    <div id="mcqOptionsContainer" class="space-y-3 pt-2">
+                        <!-- Dynamic MCQ Option Buttons -->
+                    </div>
+
+                    <div id="feedbackBox" class="hidden p-4 rounded-2xl border flex items-center justify-between transition-all duration-300">
+                        <div class="flex items-center space-x-3">
+                            <div id="feedbackIcon" class="w-8 h-8 rounded-full flex items-center justify-center text-lg"></div>
+                            <span id="feedbackText" class="font-bold text-base"></span>
+                        </div>
+                        <button id="feedbackActionBtn" onclick="handleFeedbackAction()" class="px-5 py-2 rounded-xl font-bold text-sm shadow-md transition">
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: CERTIFICATE VIEW -->
+        <section id="certificateView" class="hidden text-center py-6">
+            <div class="glass-card rounded-3xl p-8 sm:p-12 max-w-3xl mx-auto border-2 border-amber-500/40 relative shadow-2xl bg-gradient-to-b from-slate-900 via-slate-900 to-amber-950/30 overflow-hidden">
+                <div class="absolute -top-12 -left-12 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-brand-500/10 rounded-full blur-3xl"></div>
+
+                <div class="border-4 border-dashed border-amber-500/30 p-8 rounded-2xl space-y-6">
+                    <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 flex items-center justify-center text-white text-4xl shadow-xl shadow-amber-500/30">
+                        <i class="fa-solid fa-certificate"></i>
+                    </div>
+
+                    <div class="space-y-2">
+                        <span class="text-xs font-extrabold uppercase tracking-widest text-amber-400">Official Certificate of Accomplishment</span>
+                        <h2 class="font-heading text-3xl sm:text-5xl font-extrabold text-white">ENGLISH TENSE MASTER</h2>
+                        <p class="text-slate-300 text-sm sm:text-base">This is proudly awarded to <strong id="certUserName" class="text-amber-400 text-xl block my-1">Learner Name</strong> for successfully completing all 12 Levels & Quizzes of Lexicraft!</p>
+                    </div>
+
+                    <div class="py-4 border-y border-slate-700/60 max-w-md mx-auto grid grid-cols-2 gap-4">
+                        <div>
+                            <span class="text-xs text-slate-400 block">Total XP Earned</span>
+                            <span id="certXp" class="font-heading text-2xl font-bold text-amber-400">300 XP</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 block">Mastery Rating</span>
+                            <span class="font-heading text-2xl font-bold text-emerald-400">100% (Grandmaster)</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex flex-col sm:flex-row justify-center gap-4">
+                        <button onclick="window.print()" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm transition shadow-lg flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-print"></i>
+                            <span>Print / Save PDF Certificate</span>
+                        </button>
+                        <button onclick="showRoadmap()" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition">
+                            Back to Roadmap
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- App Data & Scripts -->
+    <script>
+        const ROADMAP_DATA = [
+            { id: 1, type: 'level', title: 'Level 1: Present Simple', subtitle: 'General Facts & Routines' },
+            { id: 2, type: 'level', title: 'Level 2: Present Continuous', subtitle: 'Actions Happening Now' },
+            { id: 3, type: 'level', title: 'Level 3: Present Perfect', subtitle: 'Completed Recent Actions' },
+            { id: 4, type: 'level', title: 'Level 4: Present Perfect Cont.', subtitle: 'Ongoing Duration' },
+            { id: 'quiz1', type: 'quiz', title: 'Quiz 1: Present Tenses', subtitle: 'Test your Present Tense Mastery' },
+            { id: 5, type: 'level', title: 'Level 5: Past Indefinite', subtitle: 'Completed Past Actions' },
+            { id: 6, type: 'level', title: 'Level 6: Past Continuous', subtitle: 'Past Actions in Progress' },
+            { id: 7, type: 'level', title: 'Level 7: Past Perfect', subtitle: 'Action Before Another Past Event' },
+            { id: 8, type: 'level', title: 'Level 8: Past Perfect Cont.', subtitle: 'Past Ongoing Duration' },
+            { id: 'quiz2', type: 'quiz', title: 'Quiz 2: Past Tenses', subtitle: 'Test your Past Tense Mastery' },
+            { id: 9, type: 'level', title: 'Level 9: Future Indefinite', subtitle: 'Upcoming Future Actions' },
+            { id: 10, type: 'level', title: 'Level 10: Future Continuous', subtitle: 'Future Actions in Progress' },
+            { id: 11, type: 'level', title: 'Level 11: Future Perfect', subtitle: 'Future Action Completed' },
+            { id: 12, type: 'level', title: 'Level 12: Future Perfect Cont.', subtitle: 'Duration into the Future' },
+            { id: 'quiz3', type: 'quiz', title: 'Quiz 3: Future Tenses', subtitle: 'Final Tense Assessment' },
+            { id: 'cert', type: 'cert', title: 'Certificate of Mastery', subtitle: 'Earn your Master Diploma' }
+        ];
+
+        const CONTENT_DATA = {
+            1: {
+                pages: [
+                    {
+                        title: "What is a Tense?",
+                        html: `
+                            <div class="space-y-4">
+                                <p class="text-slate-200 leading-relaxed text-base sm:text-lg">
+                                    A <strong>tense</strong> is a grammatical category that shows the time an action, event, or state of being occurs—specifically whether it happens in the past, present, or future.
+                                </p>
+                                <p class="text-slate-300 text-sm">
+                                    English has 3 main time categories, and each is divided into 4 aspects (simple, continuous, perfect, and perfect continuous), giving a total of 12 tenses.
+                                </p>
+                                <div class="p-4 rounded-2xl bg-slate-800 border border-slate-700/80 space-y-2 text-slate-300 text-sm">
+                                    <h5 class="font-bold text-brand-400 text-xs uppercase tracking-wider">Examples:</h5>
+                                    <p>1. I go to school everyday.</p>
+                                    <p>2. She is writing a letter.</p>
+                                    <p>3. He went to the market.</p>
+                                    <p>4. It rained yesterday.</p>
+                                    <p>5. He will join the college next year.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Present Tense - Simple Present Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <p class="text-slate-200 text-sm">
+                                    The present indefinite tense (also known as the simple present tense) is a verb form used to describe habitual actions, daily routines, general facts, universal truths, and permanent states or conditions.
+                                </p>
+                                <div class="p-4 rounded-xl bg-brand-500/10 border border-brand-500/30 text-brand-300 text-sm">
+                                    <strong>Explanation:</strong> Used for habits, routines, and permanent facts.
+                                </div>
+                                <div class="space-y-3 pt-2">
+                                    <h4 class="font-heading font-bold text-lg text-emerald-400">Affirmative Form (Positive statements):</h4>
+                                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                        Subject + Base Verb (s/es for 3rd person singular) + Object
+                                    </div>
+                                    <div class="space-y-1 text-slate-300 text-sm">
+                                        <p>1. She reads a book every night.</p>
+                                        <p>2. They play football on weekends.</p>
+                                        <p>3. I work as an engineer.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Simple Present - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">Negative Form (Stating something is not true):</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + do/does + not + Base Verb + Object
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>1. She does not read a book every night.</p>
+                                    <p>2. They do not play football on weekends.</p>
+                                    <p>3. I do not work as an engineer.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Simple Present - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">Interrogative Form (Asking questions):</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Do/Does + Subject + Base Verb + Object + ?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>1. Does she read a book every night?</p>
+                                    <p>2. Do they play football on weekends?</p>
+                                    <p>3. Do you work as an engineer?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: "1. She always ________ to office on time.", options: ["go", "goes", "going"], ans: 1 },
+                    { q: "2. They ________ not like spicy food.", options: ["does", "do", "are"], ans: 1 },
+                    { q: "3. ________ you speak English fluently?", options: ["Does", "Is", "Do"], ans: 2 },
+                    { q: "4. The sun ________ in the east.", options: ["rise", "rises", "rising"], ans: 1 },
+                    { q: "5. We ________ in a big city.", options: ["lives", "live", "living"], ans: 1 }
+                ]
+            },
+            2: {
+                pages: [
+                    {
+                        title: "Present Continuous Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-brand-500/10 border border-brand-500/30 text-brand-300 text-sm">
+                                    <strong>Explanation:</strong> Used for actions happening right now or temporary situations.
+                                </div>
+                                <div class="space-y-3 pt-2">
+                                    <h4 class="font-heading font-bold text-lg text-emerald-400">Affirmative Form:</h4>
+                                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                        Subject + (am/is/are) + (Verb + ing) + Object
+                                    </div>
+                                    <div class="space-y-1 text-slate-300 text-sm">
+                                        <p>• I am writing an email.</p>
+                                        <p>• She is cooking dinner.</p>
+                                        <p>• They are playing basketball.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Present Continuous - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">Negative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + (am/is/are) + not + (Verb + ing) + Object
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• I am not writing an email.</p>
+                                    <p>• She is not cooking dinner.</p>
+                                    <p>• They are not playing basketball.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Present Continuous - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">Interrogative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    (Am/Is/Are) + Subject + (Verb + ing) + Object + ?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• Am I writing an email?</p>
+                                    <p>• Is she cooking dinner?</p>
+                                    <p>• Are they playing basketball?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: "1. Look! The children ________ football in the yard.", options: ["is playing", "are playing", "plays"], ans: 1 },
+                    { q: "2. I ________ an important email right now.", options: ["am writing", "is writing", "are writing"], ans: 0 },
+                    { q: "3. She ________ not cooking dinner at the moment.", options: ["am", "do", "is"], ans: 2 },
+                    { q: "4. ________ they listening to the teacher carefully?", options: ["Are", "Is", "Do"], ans: 0 },
+                    { q: "5. Listen! Someone ________ at the door.", options: ["knock", "is knocking", "are knocking"], ans: 1 }
+                ]
+            },
+            3: {
+                pages: [
+                    {
+                        title: "Present Perfect Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-brand-500/10 border border-brand-500/30 text-brand-300 text-sm">
+                                    <strong>Explanation:</strong> Used for actions completed at an unspecific time or life experiences connected to the present.
+                                </div>
+                                <div class="space-y-3 pt-2">
+                                    <h4 class="font-heading font-bold text-lg text-emerald-400">Affirmative Form:</h4>
+                                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                        Subject + (have/has) + Past Participle (V3) + Object
+                                    </div>
+                                    <div class="space-y-1 text-slate-300 text-sm">
+                                        <p>• I have visited Paris.</p>
+                                        <p>• She has finished her homework.</p>
+                                        <p>• They have bought a house.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Present Perfect - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">Negative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + (have/has) + not + Past Participle (V3) + Object
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• I have not visited Paris.</p>
+                                    <p>• She has not finished her homework.</p>
+                                    <p>• They have not bought a house.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Present Perfect - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">Interrogative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    (Have/Has) + Subject + Past Participle (V3) + Object + ?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• Have you visited Paris?</p>
+                                    <p>• Has she finished her homework?</p>
+                                    <p>• Have they bought a house?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: "1. She ________ finished her homework already.", options: ["have", "has", "is"], ans: 1 },
+                    { q: "2. I ________ never visited Japan before.", options: ["has", "have", "am"], ans: 1 },
+                    { q: "3. ________ you ever eaten sushi?", options: ["Has", "Have", "Do"], ans: 1 },
+                    { q: "4. They ________ bought a new car recently.", options: ["has", "are", "have"], ans: 2 },
+                    { q: "5. He ________ not received the package yet.", options: ["has", "have", "does"], ans: 0 }
+                ]
+            },
+            4: {
+                pages: [
+                    {
+                        title: "Present Perfect Continuous Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs sm:text-sm">
+                                    <strong>🌟 Golden Rule:</strong> We often use "for" (duration) and "since" (starting point) to emphasize how long an action has been in progress.
+                                </div>
+                                <div class="space-y-3 pt-2">
+                                    <h4 class="font-heading font-bold text-lg text-emerald-400">Affirmative Form:</h4>
+                                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                        Subject + (have/has) + been + (Verb + ing) + since/for time
+                                    </div>
+                                    <div class="space-y-1 text-slate-300 text-sm">
+                                        <p>• I have been waiting for two hours.</p>
+                                        <p>• She has been studying since morning.</p>
+                                        <p>• It has been raining all day.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Present Perfect Continuous - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">Negative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + (have/has) + not + been + (Verb + ing) + since/for time
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• I have not been waiting for two hours.</p>
+                                    <p>• She has not been studying since morning.</p>
+                                    <p>• It has not been raining all day.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Present Perfect Continuous - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">Interrogative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    (Have/Has) + Subject + been + (Verb + ing) + since/for time + ?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• Have you been waiting for two hours?</p>
+                                    <p>• Has she been studying since morning?</p>
+                                    <p>• Has it been raining all day?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: "1. I ________ waiting for the bus for over an hour.", options: ["have been", "has been", "am being"], ans: 0 },
+                    { q: "2. She ________ studying German since 2023.", options: ["have been", "has been", "is being"], ans: 1 },
+                    { q: "3. ________ it been raining all morning?", options: ["Has", "Have", "Is"], ans: 0 },
+                    { q: "4. They ________ playing football in the rain for two hours.", options: ["has been", "have been", "are being"], ans: 1 },
+                    { q: "5. He ________ not working on that project lately.", options: ["has", "have", "has been"], ans: 2 }
+                ]
+            },
+            quiz1: {
+                mcqs: [
+                    { q: "1. My brother ________ to the gym every evening. (Simple Present)", options: ["go", "goes", "is going"], ans: 1 },
+                    { q: "2. Listen! Someone ________ at the front door. (Present Continuous)", options: ["knock", "is knocking", "has knocked"], ans: 1 },
+                    { q: "3. We ________ finished our project ahead of schedule. (Present Perfect)", options: ["has", "have", "are"], ans: 1 },
+                    { q: "4. She ________ reading that novel for three hours. (Present Perfect Continuous)", options: ["has been", "have been", "is being"], ans: 0 },
+                    { q: "5. ________ you like drinking coffee in the morning? (Simple Present)", options: ["Does", "Do", "Are"], ans: 1 }
+                ]
+            },
+            5: {
+                pages: [
+                    {
+                        title: "Past Indefinite Tense (Simple Past)",
+                        html: `
+                            <div class="space-y-4">
+                                <p class="text-slate-200 text-sm">
+                                    The past tense is a grammatical verb form used to show that an action, event, or state of being happened or existed before the present moment.
+                                </p>
+                                <div class="space-y-3 pt-2">
+                                    <h4 class="font-heading font-bold text-lg text-emerald-400">1. Affirmative Sentences (Positive Statements):</h4>
+                                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                        Subject + Second Form of Verb (V2) + Object
+                                    </div>
+                                    <div class="space-y-1 text-slate-300 text-sm">
+                                        <p>• She played tennis yesterday.</p>
+                                        <p>• They went to the market.</p>
+                                        <p>• I bought a new car.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Past Indefinite - Negative Sentences",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">2. Negative Sentences:</h4>
+                                <p class="text-xs text-slate-400">Used to state that something did not happen in the past.</p>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + did not (didn't) + First Form of Verb (V1) + Object
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <p>• She did not play tennis yesterday.</p>
+                                    <p>• They didn't go to the market.</p>
+                                    <p>• I did not buy a new car.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Past Indefinite - Interrogative Sentences",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">3. Interrogative Sentences (Questions):</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Did + Subject + First Form of Verb (V1) + Object?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <p>• Did she play tennis yesterday?</p>
+                                    <p>• Did they go to the market?</p>
+                                    <p>• Did you buy a new car?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: '1. Fill in the blank: "She ___ a delicious cake yesterday."', options: ["bake", "baked", "baking", "bakes"], ans: 1 },
+                    { q: '2. Fill in the blank: "They ___ not play football on Sunday."', options: ["do", "does", "did", "were"], ans: 2 },
+                    { q: '3. Fill in the blank: "___ you finish your homework last night?"', options: ["Do", "Did", "Have", "Were"], ans: 1 },
+                    { q: '4. Choose the correct past form (V2) of the verb "go":', options: ["goed", "gone", "went", "going"], ans: 2 },
+                    { q: '5. Fill in the blank: "He ___ a new car last month."', options: ["buy", "bought", "buying", "buys"], ans: 1 }
+                ]
+            },
+            6: {
+                pages: [
+                    {
+                        title: "Past Continuous Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-emerald-400">Affirmative Sentences (Positive Statements):</h4>
+                                <p class="text-xs text-slate-400">States that an action was ongoing at a specific time in the past.</p>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + was/were + Verb(-ing) + Object
+                                </div>
+                                <div class="space-y-1 text-slate-300 text-sm">
+                                    <p>• I was reading a book at 8 PM last night.</p>
+                                    <p>• They were playing football when it started to rain.</p>
+                                    <p>• She was cooking dinner while he was setting the table.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Past Continuous - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">Negative Sentences:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + was/were + not + Verb(-ing) + Object
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <p>• I was not (wasn't) reading a book; I was watching TV.</p>
+                                    <p>• They were not (weren't) playing football.</p>
+                                    <p>• She wasn't cooking at that time.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Past Continuous - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">Interrogative Sentences (Questions):</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Was/Were + Subject + Verb(-ing) + Object + ?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <p>• Was I reading too loudly?</p>
+                                    <p>• Were they playing football in the rain?</p>
+                                    <p>• Was she cooking when you arrived?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: "1. While I _____ dinner, the phone rang.", options: ["am", "was", "were", "is"], ans: 1 },
+                    { q: "2. They _____ playing football when it started to rain.", options: ["was", "are", "were", "been"], ans: 2 },
+                    { q: "3. She _____ reading a novel at midnight.", options: ["was", "were", "is", "are"], ans: 0 },
+                    { q: "4. What _____ you doing at 8 PM yesterday?", options: ["was", "were", "are", "did"], ans: 1 },
+                    { q: "5. The children _____ sleeping soundly when the alarm went off.", options: ["was", "were", "are", "is"], ans: 1 }
+                ]
+            },
+            7: {
+                pages: [
+                    {
+                        title: "Past Perfect Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs sm:text-sm">
+                                    <strong>🌟 Golden Rule:</strong> When two actions happened in the past, the action that happened first uses past perfect, and the second action uses simple past.
+                                </div>
+                                <h4 class="font-heading font-bold text-lg text-emerald-400">1. Affirmative Sentences:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + had + V3 + Rest of sentence
+                                </div>
+                                <div class="space-y-1 text-slate-300 text-sm">
+                                    <p>• I had eaten dinner before she arrived.</p>
+                                    <p>• They had finished the project before the deadline.</p>
+                                    <p>• She had left the house when I called her.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Past Perfect - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">2. Negative Sentences:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + had not (hadn't) + V3 + Rest of sentence
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <p>• I hadn't seen that movie before yesterday.</p>
+                                    <p>• They hadn't locked the door when the burglar broke in.</p>
+                                    <p>• She hadn't studied English before she moved to London.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Past Perfect - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">3. Interrogative Sentences:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Had + Subject + V3 + Rest of sentence?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <p>• Had you eaten breakfast before you went to school?</p>
+                                    <p>• Had they left by the time you reached the station?</p>
+                                    <p>• Why had she cried before the party even started?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: "1. By the time we arrived, the movie had already _____ .", options: ["begin", "began", "begun", "begins"], ans: 2 },
+                    { q: "2. She _____ already left when I reached her house.", options: ["has", "had", "have", "was"], ans: 1 },
+                    { q: "3. They _____ finished their homework before the teacher collected it.", options: ["have", "had", "has", "were"], ans: 1 },
+                    { q: "4. Had you ever _____ to Paris before last year?", options: ["be", "being", "been", "was"], ans: 2 },
+                    { q: "5. I _____ never seen such a beautiful sunset before that day.", options: ["had", "have", "has", "was"], ans: 0 }
+                ]
+            },
+            8: {
+                pages: [
+                    {
+                        title: "Past Perfect Continuous Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs sm:text-sm">
+                                    <strong>🌟 Golden Rule:</strong> Uses "for" (duration) and "since" (starting point) to emphasize how long an action had been in progress.
+                                </div>
+                                <h4 class="font-heading font-bold text-lg text-emerald-400">1. Affirmative Sentences:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + had been + Verb-ing + Rest of sentence
+                                </div>
+                                <div class="space-y-1 text-slate-300 text-sm">
+                                    <p>• I had been studying for two hours when the power went out.</p>
+                                    <p>• They had been playing cricket since morning.</p>
+                                    <p>• She had been waiting for the bus for 30 minutes before it arrived.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Past Perfect Continuous - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">2. Negative Sentences:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + had not been (hadn't been) + Verb-ing + Rest of sentence
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <p>• I hadn't been sleeping well before the exam.</p>
+                                    <p>• They hadn't been practicing regularly, so they lost the match.</p>
+                                    <p>• She hadn't been feeling well all day.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Past Perfect Continuous - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">3. Interrogative Sentences:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Had + Subject + been + Verb-ing + Rest of sentence?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <p>• Had you been waiting long before the train arrived?</p>
+                                    <p>• Had they been working on this project all week?</p>
+                                    <p>• Why had she been crying when you saw her?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: "1. I _____ studying for three hours before the lights went out.", options: ["had", "have", "was", "did"], ans: 0 },
+                    { q: "2. They had _____ playing cricket since morning when it started to rain.", options: ["be", "been", "being", "was"], ans: 1 },
+                    { q: "3. She _____ been working at that company for five years before she resigned.", options: ["has", "have", "had", "was"], ans: 2 },
+                    { q: "4. Had you _____ waiting long before the bus finally arrived?", options: ["be", "being", "been", "was"], ans: 2 },
+                    { q: "5. We hadn't _____ sleeping well for weeks prior to the noise stopping.", options: ["be", "been", "being", "was"], ans: 1 }
+                ]
+            },
+            quiz2: {
+                mcqs: [
+                    { q: "1. Yesterday, I _____ to the grocery store to buy some milk.", options: ["go", "gone", "went", "going"], ans: 2 },
+                    { q: "2. While they _____ dinner, the doorbell rang.", options: ["eat", "were", "are", "was"], ans: 1 },
+                    { q: "3. By the time we reached the theater, the movie had already _____ .", options: ["start", "starts", "started", "starting"], ans: 2 },
+                    { q: "4. She _____ been working at the company for three years before she got promoted.", options: ["has", "had", "have", "was"], ans: 1 },
+                    { q: "5. What _____ you do on your vacation last summer?", options: ["do", "does", "did", "done"], ans: 2 }
+                ]
+            },
+            9: {
+                pages: [
+                    {
+                        title: "Future Tense - Future Indefinite Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <p class="text-slate-200 text-sm">
+                                    The future tense is a verb form used to describe an action, event, or state of being that has not yet happened and will occur or exist at a time after the present moment.
+                                </p>
+                                <h4 class="font-heading font-bold text-lg text-emerald-400">Affirmative Sentences (Positive Statements):</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + will + First Form of Verb (V1) + Object
+                                </div>
+                                <div class="space-y-1 text-slate-300 text-sm">
+                                    <p>• She will visit her grandparents tomorrow.</p>
+                                    <p>• They will play football in the evening.</p>
+                                    <p>• I will buy a new laptop.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Future Indefinite - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">Negative Sentences:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + will not (won't) + First Form of Verb (V1) + Object
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <p>• She will not visit her grandparents tomorrow.</p>
+                                    <p>• They won't play football in the evening.</p>
+                                    <p>• I will not buy a new laptop.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Future Indefinite - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">Interrogative Sentences (Questions):</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Will + Subject + First Form of Verb (V1) + Object?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <p>• Will she visit her grandparents tomorrow?</p>
+                                    <p>• Will they play football in the evening?</p>
+                                    <p>• Will you buy a new laptop?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: '1. Fill in the blank: "She ___ visit her grandparents tomorrow."', options: ["has", "will", "did", "was"], ans: 1 },
+                    { q: "2. She ______ a letter tomorrow.", options: ["write", "writes", "will write", "wrote"], ans: 2 },
+                    { q: "3. They ______ the match next week.", options: ["win", "won", "will win", "winning"], ans: 2 },
+                    { q: "4. I ______ you later.", options: ["help", "helped", "shall help", "helps"], ans: 2 },
+                    { q: '5. Fill in the blank: "He ___ buy a new car next month."', options: ["will", "bought", "buying", "buys"], ans: 0 }
+                ]
+            },
+            10: {
+                pages: [
+                    {
+                        title: "Future Continuous Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-brand-500/10 border border-brand-500/30 text-brand-300 text-sm">
+                                    <strong>Explanation:</strong> Used for ongoing actions that will be in progress at a specific point in the future.
+                                </div>
+                                <div class="space-y-3 pt-2">
+                                    <h4 class="font-heading font-bold text-lg text-emerald-400">Affirmative Form:</h4>
+                                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                        Subject + will be + Verb(-ing) + Object
+                                    </div>
+                                    <div class="space-y-1 text-slate-300 text-sm">
+                                        <p>• I will be studying at 8 PM tonight.</p>
+                                        <p>• She will be cooking dinner when you arrive.</p>
+                                        <p>• They will be playing football tomorrow evening.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Future Continuous - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">Negative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + will not (won't) be + Verb(-ing) + Object
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• I will not (won't) be studying at 8 PM tonight.</p>
+                                    <p>• She won't be cooking dinner at that time.</p>
+                                    <p>• They won't be playing football tomorrow.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Future Continuous - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">Interrogative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Will + Subject + be + Verb(-ing) + Object + ?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• Will you be studying at 8 PM tonight?</p>
+                                    <p>• Will she be cooking dinner when I arrive?</p>
+                                    <p>• Will they be playing football tomorrow evening?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: "1. At this time tomorrow, I _____ flying to London.", options: ["will be", "am", "will", "was"], ans: 0 },
+                    { q: "2. She _____ be working late tonight.", options: ["will", "is", "was", "does"], ans: 0 },
+                    { q: "3. They will be _____ football at 5 PM.", options: ["play", "played", "playing", "plays"], ans: 2 },
+                    { q: "4. _____ you be joining us for dinner later?", options: ["Will", "Are", "Do", "Have"], ans: 0 },
+                    { q: "5. He won't _____ sleeping when you arrive.", options: ["be", "been", "being", "is"], ans: 0 }
+                ]
+            },
+            11: {
+                pages: [
+                    {
+                        title: "Future Perfect Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-brand-500/10 border border-brand-500/30 text-brand-300 text-sm">
+                                    <strong>Explanation:</strong> Used for an action that will be completed before a specified point of time in the future.
+                                </div>
+                                <div class="space-y-3 pt-2">
+                                    <h4 class="font-heading font-bold text-lg text-emerald-400">Affirmative Form:</h4>
+                                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                        Subject + will have + Past Participle (V3) + Object
+                                    </div>
+                                    <div class="space-y-1 text-slate-300 text-sm">
+                                        <p>• By next year, I will have graduated from college.</p>
+                                        <p>• She will have finished her work by 5 PM.</p>
+                                        <p>• They will have completed the building by December.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Future Perfect - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">Negative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + will not (won't) have + Past Participle (V3) + Object
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• I will not have graduated by next year.</p>
+                                    <p>• She won't have finished her work by 5 PM.</p>
+                                    <p>• They won't have left before you reach.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Future Perfect - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">Interrogative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Will + Subject + have + Past Participle (V3) + Object + ?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• Will you have graduated by next year?</p>
+                                    <p>• Will she have finished her work by 5 PM?</p>
+                                    <p>• Will they have completed the project by then?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: "1. By midnight, I _____ finished the project.", options: ["will have", "will", "have", "am"], ans: 0 },
+                    { q: "2. She will have _____ her exam results by Friday.", options: ["received", "receive", "receiving", "receives"], ans: 0 },
+                    { q: "3. They won't _____ left before you reach.", options: ["have", "has", "be", "been"], ans: 0 },
+                    { q: "4. _____ he have completed the report by tomorrow?", options: ["Will", "Has", "Does", "Is"], ans: 0 },
+                    { q: "5. By 2026, we will have _____ here for a decade.", options: ["lived", "live", "living", "lives"], ans: 0 }
+                ]
+            },
+            12: {
+                pages: [
+                    {
+                        title: "Future Perfect Continuous Tense",
+                        html: `
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs sm:text-sm">
+                                    <strong>🌟 Golden Rule:</strong> Used to describe an ongoing action that will continue up to a specific future moment.
+                                </div>
+                                <div class="space-y-3 pt-2">
+                                    <h4 class="font-heading font-bold text-lg text-emerald-400">Affirmative Form:</h4>
+                                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                        Subject + will have been + Verb(-ing) + since/for time
+                                    </div>
+                                    <div class="space-y-1 text-slate-300 text-sm">
+                                        <p>• By 5 PM, I will have been working for 8 hours.</p>
+                                        <p>• She will have been studying for 3 hours by the time you arrive.</p>
+                                        <p>• Next month, they will have been living here for ten years.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Future Perfect Continuous - Negative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-rose-400">Negative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Subject + will not (won't) have been + Verb(-ing) + since/for time
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• I will not have been working here that long.</p>
+                                    <p>• She won't have been studying for hours by then.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Future Perfect Continuous - Interrogative Form",
+                        html: `
+                            <div class="space-y-4">
+                                <h4 class="font-heading font-bold text-lg text-sky-400">Interrogative Form:</h4>
+                                <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 font-mono text-xs sm:text-sm text-amber-300">
+                                    Will + Subject + have been + Verb(-ing) + since/for time + ?
+                                </div>
+                                <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-slate-200 text-sm">
+                                    <h5 class="font-bold text-slate-400 text-xs uppercase">Examples:</h5>
+                                    <p>• Will you have been working for 8 hours by 5 PM?</p>
+                                    <p>• Will she have been studying long when we arrive?</p>
+                                </div>
+                            </div>
+                        `,
+                        btnText: "READY FOR FEEDBACK"
+                    }
+                ],
+                mcqs: [
+                    { q: "1. By next month, she will have _____ teaching for 10 years.", options: ["been", "be", "being", "was"], ans: 0 },
+                    { q: "2. How long will you _____ been waiting by then?", options: ["have", "has", "be", "had"], ans: 0 },
+                    { q: "3. They will have been _____ for hours when we land.", options: ["traveling", "traveled", "travel", "travels"], ans: 0 },
+                    { q: "4. I will _____ have been living here for long.", options: ["not", "no", "never", "none"], ans: 0 },
+                    { q: "5. He will have been _____ all night.", options: ["studying", "studied", "study", "studies"], ans: 0 }
+                ]
+            },
+            quiz3: {
+                mcqs: [
+                    { q: "1. She _____ visit her doctor tomorrow morning. (Future Indefinite)", options: ["will", "did", "has", "was"], ans: 0 },
+                    { q: "2. This time tomorrow, we will be _____ on the beach. (Future Cont.)", options: ["relaxing", "relaxed", "relax", "relaxes"], ans: 0 },
+                    { q: "3. By June, he will have _____ his training. (Future Perfect)", options: ["completed", "complete", "completing", "completes"], ans: 0 },
+                    { q: "4. I will have been _____ English for 5 years by next month.", options: ["learning", "learned", "learn", "learns"], ans: 0 },
+                    { q: "5. _____ you bring the documents tomorrow?", options: ["Will", "Did", "Has", "Have"], ans: 0 }
+                ]
+            }
+        };
+
+        // --- APP STATE MANAGEMENT ---
+        let userProgress = JSON.parse(localStorage.getItem('lexicraft_progress')) || {
+            name: '',
+            unlockedIndex: 0,
+            xp: 0
+        };
+
+        let currentActiveItem = null;
+        let currentPageIndex = 0;
+        let currentMcqIndex = 0;
+
+        const nameInputView = document.getElementById('nameInputView');
+        const roadmapView = document.getElementById('roadmapView');
+        const levelContentView = document.getElementById('levelContentView');
+        const mcqView = document.getElementById('mcqView');
+        const certificateView = document.getElementById('certificateView');
+
+        const userNameInput = document.getElementById('userNameInput');
+        const headerUserName = document.getElementById('headerUserName');
+        const userNameDisplayBadge = document.getElementById('userNameDisplayBadge');
+        const certUserName = document.getElementById('certUserName');
+        const userXpDisplay = document.getElementById('userXpDisplay');
+
+        window.onload = function() {
+            updateXpDisplay();
+            if (userProgress.name) {
+                updateUserHeader();
+                showRoadmap();
+            } else {
+                showNameInput();
+            }
+        };
+
+        function submitUserName() {
+            const val = userNameInput.value.trim();
+            if (!val) {
+                alert("Please enter your name to proceed.");
+                return;
+            }
+            userProgress.name = val;
+            saveProgress();
+            updateUserHeader();
+            showRoadmap();
+        }
+
+        function updateUserHeader() {
+            if (userProgress.name) {
+                headerUserName.innerText = userProgress.name;
+                userNameDisplayBadge.classList.remove('hidden');
+            }
+        }
+
+        function showNameInput() {
+            nameInputView.classList.remove('hidden');
+            roadmapView.classList.add('hidden');
+            levelContentView.classList.add('hidden');
+            mcqView.classList.add('hidden');
+            certificateView.classList.add('hidden');
+        }
+
+        function saveProgress() {
+            localStorage.setItem('lexicraft_progress', JSON.stringify(userProgress));
+            updateXpDisplay();
+        }
+
+        function updateXpDisplay() {
+            userXpDisplay.innerText = `${userProgress.xp} XP`;
+        }
+
+        function resetProgress() {
+            if (confirm("Are you sure you want to reset all your progress, name, and XP?")) {
+                userProgress = { name: '', unlockedIndex: 0, xp: 0 };
+                saveProgress();
+                userNameInput.value = '';
+                userNameDisplayBadge.classList.add('hidden');
+                showNameInput();
+            }
+        }
+
+        function showRoadmap() {
+            nameInputView.classList.add('hidden');
+            levelContentView.classList.add('hidden');
+            mcqView.classList.add('hidden');
+            certificateView.classList.add('hidden');
+            roadmapView.classList.remove('hidden');
+            renderRoadmap();
+        }
+
+        function renderRoadmap() {
+            const container = document.getElementById('roadmapNodes');
+            container.innerHTML = '';
+
+            ROADMAP_DATA.forEach((item, index) => {
+                const isUnlocked = index <= userProgress.unlockedIndex;
+                const isCurrent = index === userProgress.unlockedIndex;
+                const isCompleted = index < userProgress.unlockedIndex;
+
+                const nodeWrapper = document.createElement('div');
+                nodeWrapper.className = `flex items-center space-x-4 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse space-x-reverse'}`;
+
+                let iconHtml = '';
+                let bgClass = '';
+
+                if (item.type === 'quiz') {
+                    bgClass = isCompleted 
+                        ? 'bg-amber-500 text-slate-950 shadow-amber-500/30' 
+                        : (isCurrent ? 'bg-amber-500 text-slate-950 active-level-glow' : 'bg-slate-800 text-slate-500 border border-slate-700');
+                    iconHtml = '<i class="fa-solid fa-lightbulb text-xl"></i>';
+                } else if (item.type === 'cert') {
+                    bgClass = isCompleted || isUnlocked
+                        ? 'bg-gradient-to-tr from-amber-400 to-amber-600 text-slate-950 shadow-amber-500/40 animate-bounce'
+                        : 'bg-slate-800 text-slate-500 border border-slate-700';
+                    iconHtml = '<i class="fa-solid fa-award text-2xl"></i>';
+                } else {
+                    bgClass = isCompleted
+                        ? 'bg-emerald-500 text-slate-950 shadow-emerald-500/30'
+                        : (isCurrent ? 'bg-brand-500 text-white active-level-glow' : 'bg-slate-800 text-slate-500 border border-slate-700');
+                    iconHtml = isCompleted ? '<i class="fa-solid fa-check text-xl"></i>' : (isUnlocked ? `<span class="font-bold font-heading text-lg">${item.id}</span>` : '<i class="fa-solid fa-lock text-base"></i>');
+                }
+
+                nodeWrapper.innerHTML = `
+                    <div onclick="openNode(${index})" class="flex-1 cursor-pointer transition transform hover:scale-105">
+                        <div class="glass-card p-4 rounded-2xl border ${isCurrent ? 'border-brand-500/80 bg-slate-800/90' : 'border-slate-700/60'} shadow-lg">
+                            <span class="text-[10px] font-extrabold uppercase tracking-widest ${isUnlocked ? 'text-brand-400' : 'text-slate-500'} block">
+                                ${item.type === 'quiz' ? 'Checkpoint Quiz' : (item.type === 'cert' ? 'Completion' : `Level ${item.id}`)}
+                            </span>
+                            <h4 class="font-heading font-bold text-base text-white">${item.title}</h4>
+                            <p class="text-xs text-slate-400 truncate">${item.subtitle}</p>
+                        </div>
+                    </div>
+
+                    <div onclick="openNode(${index})" class="w-14 h-14 rounded-2xl flex items-center justify-center font-bold shadow-xl transition transform hover:scale-110 cursor-pointer ${bgClass}">
+                        ${iconHtml}
+                    </div>
+                    <div class="flex-1"></div>
+                `;
+
+                container.appendChild(nodeWrapper);
+            });
+        }
+
+        function openNode(index) {
+            if (index > userProgress.unlockedIndex) {
+                alert("This level is locked! Please complete the preceding levels first.");
+                return;
+            }
+
+            currentActiveItem = ROADMAP_DATA[index];
+            currentPageIndex = 0;
+            currentMcqIndex = 0;
+
+            if (currentActiveItem.type === 'cert') {
+                showCertificate();
+            } else if (currentActiveItem.type === 'quiz') {
+                showMcqChallenge();
+            } else {
+                showLevelContent();
+            }
+        }
+
+        function showLevelContent() {
+            roadmapView.classList.add('hidden');
+            mcqView.classList.add('hidden');
+            certificateView.classList.add('hidden');
+            levelContentView.classList.remove('hidden');
+
+            renderPage();
+        }
+
+        function renderPage() {
+            const data = CONTENT_DATA[currentActiveItem.id];
+            if (!data || !data.pages) return;
+            
+            const page = data.pages[currentPageIndex];
+            const totalPages = data.pages.length;
+
+            document.getElementById('levelProgressIndicator').innerText = `${currentActiveItem.title} • Page ${currentPageIndex + 1} of ${totalPages}`;
+
+            const pageBody = document.getElementById('pageBody');
+            const nextBtn = document.getElementById('nextBtn');
+
+            pageBody.innerHTML = `
+                <h3 class="font-heading font-extrabold text-2xl sm:text-3xl text-white tracking-tight border-b border-slate-700/60 pb-3">
+                    ${page.title}
+                </h3>
+                <div>${page.html}</div>
+            `;
+
+            if (page.btnText) {
+                nextBtn.innerHTML = `<span>${page.btnText}</span> <i class="fa-solid fa-arrow-right"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>NEXT</span> <i class="fa-solid fa-arrow-right"></i>`;
+            }
+        }
+
+        function nextPage() {
+            const data = CONTENT_DATA[currentActiveItem.id];
+            if (data && data.pages && currentPageIndex < data.pages.length - 1) {
+                currentPageIndex++;
+                renderPage();
+            } else {
+                showMcqChallenge();
+            }
+        }
+
+        function showMcqChallenge() {
+            roadmapView.classList.add('hidden');
+            levelContentView.classList.add('hidden');
+            certificateView.classList.add('hidden');
+            mcqView.classList.remove('hidden');
+
+            renderMcqQuestion();
+        }
+
+        function renderMcqQuestion() {
+            const mcqs = CONTENT_DATA[currentActiveItem.id].mcqs;
+            const currentMcq = mcqs[currentMcqIndex];
+
+            document.getElementById('mcqProgressText').innerText = `Question ${currentMcqIndex + 1} of ${mcqs.length}`;
+            document.getElementById('mcqQuestionText').innerText = currentMcq.q;
+
+            const container = document.getElementById('mcqOptionsContainer');
+            container.innerHTML = '';
+
+            const feedbackBox = document.getElementById('feedbackBox');
+            feedbackBox.classList.add('hidden');
+
+            const optionLabels = ['A', 'B', 'C', 'D'];
+            currentMcq.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.onclick = () => selectMcqOption(idx);
+                btn.className = `w-full p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-left font-semibold text-slate-100 flex items-center space-x-3 transition active:scale-[0.98]`;
+                btn.innerHTML = `
+                    <span class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-700 text-brand-400 font-bold flex items-center justify-center text-sm">
+                        ${optionLabels[idx]}
+                    </span>
+                    <span class="text-base">${opt}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function selectMcqOption(selectedIndex) {
+            const mcqs = CONTENT_DATA[currentActiveItem.id].mcqs;
+            const currentMcq = mcqs[currentMcqIndex];
+            const isCorrect = selectedIndex === currentMcq.ans;
+
+            const feedbackBox = document.getElementById('feedbackBox');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackText = document.getElementById('feedbackText');
+            const feedbackActionBtn = document.getElementById('feedbackActionBtn');
+
+            feedbackBox.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500/40', 'bg-rose-500/10', 'border-rose-500/40');
+
+            if (isCorrect) {
+                feedbackBox.classList.add('bg-emerald-500/10', 'border-emerald-500/40');
+                feedbackIcon.className = 'w-8 h-8 rounded-full flex items-center justify-center text-lg bg-emerald-500 text-slate-950';
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
+                feedbackText.className = 'font-bold text-base text-emerald-400';
+                feedbackText.innerText = 'Correct! Great job.';
+                feedbackActionBtn.className = 'px-5 py-2 rounded-xl font-bold text-sm shadow-md transition bg-emerald-500 hover:bg-emerald-400 text-slate-950';
+                feedbackActionBtn.innerText = currentMcqIndex < mcqs.length - 1 ? 'Next Question' : 'Complete Level';
+                feedbackActionBtn.dataset.correct = "true";
+            } else {
+                feedbackBox.classList.add('bg-rose-500/10', 'border-rose-500/40');
+                feedbackIcon.className = 'w-8 h-8 rounded-full flex items-center justify-center text-lg bg-rose-500 text-white';
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                feedbackText.className = 'font-bold text-base text-rose-400';
+                feedbackText.innerText = 'Wrong! Please try again.';
+                feedbackActionBtn.className = 'px-5 py-2 rounded-xl font-bold text-sm shadow-md transition bg-rose-500 hover:bg-rose-400 text-white';
+                feedbackActionBtn.innerText = 'Try Again';
+                feedbackActionBtn.dataset.correct = "false";
+            }
+        }
+
+        function handleFeedbackAction() {
+            const feedbackActionBtn = document.getElementById('feedbackActionBtn');
+            const isCorrect = feedbackActionBtn.dataset.correct === "true";
+
+            if (!isCorrect) {
+                renderMcqQuestion();
+                return;
+            }
+
+            const mcqs = CONTENT_DATA[currentActiveItem.id].mcqs;
+            if (currentMcqIndex < mcqs.length - 1) {
+                currentMcqIndex++;
+                renderMcqQuestion();
+            } else {
+                completeCurrentNode();
+            }
+        }
+
+        function completeCurrentNode() {
+            const currentIndex = ROADMAP_DATA.findIndex(item => item.id === currentActiveItem.id);
+            if (currentIndex === userProgress.unlockedIndex) {
+                userProgress.unlockedIndex++;
+                userProgress.xp += 20;
+                saveProgress();
+            }
+
+            if (userProgress.unlockedIndex >= ROADMAP_DATA.length - 1) {
+                showCertificate();
+            } else {
+                showRoadmap();
+            }
+        }
+
+        function showCertificate() {
+            roadmapView.classList.add('hidden');
+            levelContentView.classList.add('hidden');
+            mcqView.classList.add('hidden');
+            certificateView.classList.remove('hidden');
+
+            certUserName.innerText = userProgress.name || "Learner";
+            document.getElementById('certXp').innerText = `${userProgress.xp} XP`;
+
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 200,
+                    spread: 100,
+                    origin: { y: 0.5 }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
